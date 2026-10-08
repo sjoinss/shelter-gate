@@ -1,0 +1,137 @@
+{
+  "events": [
+    {
+      "id": "outbreak",
+      "fixedDay": 6,
+      "title": "일반 구역 집단 발열",
+      "body": [
+        "새벽 3시, 승강장 쪽 일반 구역에서 발열자가 연달아 나왔다는 연락이 왔다.",
+        "의무실은 지난 며칠 사이 들어온 사람들을 의심하고 있다. 환기 설비를 최대로 돌리면 필터가 빨리 닳는다."
+      ],
+      "scale": "outbreak",
+      "choices": [
+        {
+          "label": "환기 설비를 최대로 돌리고 구역을 소독한다",
+          "requires": { "filters": 3 },
+          "effects": { "filters": -3, "trust": 2, "hiddenInfectedHalve": true },
+          "result": "밤새 환기구가 울렸다. 아침에는 발열자가 더 늘지 않았다."
+        },
+        {
+          "label": "평소대로 운영한다",
+          "effects": { "hiddenInfected": 2, "trust": -2 },
+          "result": "아무것도 바꾸지 않았다. 아침 배식 줄에서 기침 소리가 들렸다."
+        }
+      ]
+    },
+    {
+      "id": "bribe",
+      "weight": 3,
+      "repeat": true,
+      "title": "창구 밑의 봉투",
+      "body": [
+        "근무를 마치고 정리하는데, 한 남자가 창구 아래로 두툼한 봉투를 밀어 넣는다.",
+        "\"내일 우리 가족 서류에 조금 문제가 있어도 그냥 넣어 주세요.\" 봉투 안에는 배급표가 들어 있다."
+      ],
+      "choices": [
+        {
+          "label": "봉투를 받는다",
+          "effects": { "supplyPoints": 6, "bribes": 1 },
+          "risk": { "chance": 0.35, "effects": { "trust": -10 }, "result": "다음 날 아침, 누군가 본부에 제보했다. 감사 기록에 이름이 올랐다." },
+          "result": "봉투를 서랍에 넣었다. 아무도 보지 못한 것 같다."
+        },
+        {
+          "label": "돌려준다",
+          "effects": { "trust": 1 },
+          "result": "봉투를 돌려주자 남자는 아무 말 없이 돌아섰다."
+        }
+      ]
+    },
+    {
+      "id": "ventilation",
+      "weight": 3,
+      "repeat": true,
+      "when": { "maxFilters": 2 },
+      "title": "환기 불량 민원",
+      "body": ["3번 출구 쪽 주민들이 숨이 막힌다며 의무실 앞에 모였다. 환기구 필터가 거의 막혀 있다."],
+      "choices": [
+        {
+          "label": "필터 2개를 바로 교체한다",
+          "requires": { "filters": 2 },
+          "effects": { "filters": -2, "trust": 2 },
+          "result": "필터를 바꾸자 공기가 조금 나아졌다."
+        },
+        {
+          "label": "보급이 올 때까지 버틴다",
+          "effects": { "trust": -3, "hiddenInfected": 1 },
+          "result": "주민들은 흩어졌지만 불만은 남았다."
+        }
+      ]
+    },
+    {
+      "id": "ration",
+      "weight": 3,
+      "repeat": true,
+      "when": { "foodBelowDays": 2 },
+      "title": "배급 불만",
+      "body": ["저녁 배식이 부족하다는 민원이 들어왔다. 아이가 있는 가족들은 배급량을 늘려 달라고 한다."],
+      "choices": [
+        {
+          "label": "오늘만 배급을 늘린다 (식량 20)",
+          "requires": { "food": 20 },
+          "effects": { "food": -20, "trust": 2 },
+          "result": "배식 줄이 조용해졌다. 창고는 그만큼 비었다."
+        },
+        {
+          "label": "배급량을 그대로 둔다",
+          "effects": { "trust": -2 },
+          "result": "규정대로 나눴다. 몇몇은 창구까지 찾아와 항의했다."
+        }
+      ]
+    },
+    {
+      "id": "family-visit",
+      "weight": 2,
+      "repeat": true,
+      "when": { "minInfectedInQuarantine": 1 },
+      "title": "격리자 가족의 면회 요구",
+      "body": ["격리실에 있는 사람의 가족이 얼굴만이라도 보게 해 달라고 매달린다. 격리실 문을 열면 감염 위험이 생긴다."],
+      "choices": [
+        {
+          "label": "마스크를 씌우고 5분만 허락한다",
+          "effects": { "trust": 2 },
+          "risk": { "chance": 0.3, "effects": { "hiddenInfected": 1 }, "result": "면회를 다녀온 가족이 밤새 기침을 했다." },
+          "result": "가족은 고개를 숙이고 돌아갔다."
+        },
+        {
+          "label": "규정대로 거절한다",
+          "effects": { "trust": -1 },
+          "result": "가족은 한참 동안 격리실 문 앞을 떠나지 않았다."
+        }
+      ]
+    },
+    {
+      "id": "doctor",
+      "weight": 2,
+      "minDay": 7,
+      "maxDay": 12,
+      "title": "서류 없는 의사",
+      "body": [
+        "근무가 끝난 뒤 한 여자가 찾아왔다. 시립병원 응급실에서 일했다고 한다.",
+        "대피카드는 물에 젖어 글씨가 번졌고, 의료인 증명서는 없다. 규정대로라면 들일 수 없다."
+      ],
+      "choices": [
+        {
+          "label": "규정을 어기고 들인다",
+          "effects": { "medicine": 4, "ruleBreaks": 1, "occupancy": 1 },
+          "risk": { "chance": 0.25, "effects": { "trust": -5 }, "result": "본부 점검에서 서류 없는 입소자가 확인되었다." },
+          "result": "그녀는 그날 밤부터 의무실을 맡았다. 의약품 정리가 한결 나아졌다."
+        },
+        {
+          "label": "돌려보낸다",
+          "effects": {},
+          "result": "그녀는 다른 대피소를 찾아보겠다며 계단을 올라갔다."
+        }
+      ]
+    }
+  ]
+}

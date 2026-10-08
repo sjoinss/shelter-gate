@@ -1,0 +1,169 @@
+{
+  "shelter": {
+    "capacityMax": 80,
+    "initialOccupancy": 0,
+    "quarantineSeats": 6,
+    "trustStart": 70,
+    "trustMax": 100
+  },
+  "calendar": {
+    "todayOffset": 9
+  },
+  "documents": {
+    "idCardValidAheadMax": 15,
+    "idCardExpiredBackMax": 6,
+    "permitIssuedBackMax": 6,
+    "permitValidAheadMax": 7
+  },
+  "timer": {
+    "relaxedMultiplier": 1.5,
+    "announceEverySec": 30,
+    "announceFinalSec": 10
+  },
+  "actions": {
+    "questionCostSec": 2,
+    "wrongPointCostSec": 2
+  },
+  "tools": {
+    "temperature": {
+      "costSec": 3,
+      "recheckDelaySec": 5
+    },
+    "symptoms": {
+      "costSec": 8
+    },
+    "rapidKit": {
+      "costSec": 20
+    },
+    "spo2": {
+      "costSec": 5
+    },
+    "breathing": {
+      "costSec": 5
+    }
+  },
+  "infection": {
+    "feverThreshold": 37.5,
+    "detection": {
+      "temperature": {
+        "none": 0.05,
+        "incubating": 0.1,
+        "symptomatic": 0.85
+      },
+      "symptoms": {
+        "none": 0.03,
+        "incubating": 0.05,
+        "symptomatic": 0.9
+      },
+      "rapidKit": {
+        "none": 0.02,
+        "incubating": 0.5,
+        "symptomatic": 0.95
+      },
+      "spo2Low": {
+        "none": 0.01,
+        "incubating": 0,
+        "symptomatic": 0.4
+      },
+      "breathing": {
+        "none": 0.02,
+        "incubating": 0,
+        "symptomatic": 0.65
+      }
+    },
+    "visibleSignChance": 0.6,
+    "runnerSignChance": 0.7,
+    "spreadRate": 0.6,
+    "quarantineDays": [
+      2,
+      3
+    ],
+    "transferAfterDays": 4,
+    "spo2Threshold": 94
+  },
+  "scoring": {
+    "freeWarnings": 2,
+    "penaltyPerMistake": 2,
+    "penaltyMajor": 4,
+    "supplyPerCorrect": 1,
+    "trust": {
+      "wronglyDenied": -3,
+      "approvedFaulty": -2,
+      "wrongReason": -1,
+      "wrongQuarantine": -1,
+      "deniedSick": -2,
+      "approvedSick": -6,
+      "unprocessed": -1,
+      "perfectDayBonus": 2,
+      "perInfectionFound": -2,
+      "untreatedInfection": -1
+    }
+  },
+  "generator": {
+    "adultAge": [
+      20,
+      69
+    ],
+    "elderAge": [
+      70,
+      86
+    ],
+    "childAge": [
+      4,
+      15
+    ],
+    "minorAloneAge": [
+      11,
+      15
+    ],
+    "elderChance": 0.15,
+    "maxCompanions": 3
+  },
+  "resources": {
+    "initial": {
+      "food": 200,
+      "medicine": 10,
+      "filters": 6,
+      "kits": 4
+    },
+    "consumeFromDay": 7,
+    "foodPerPerson": 1,
+    "medicinePerInfected": 1,
+    "filtersPerDay": 1,
+    "extraFilterOccupancy": 60,
+    "noFilterSpreadMultiplier": 1.6,
+    "shortageTrust": {
+      "food": -4,
+      "medicine": -1,
+      "filters": -2
+    },
+    "medicReward": {
+      "medicine": 3
+    }
+  },
+  "shop": {
+    "openFromDay": 6,
+    "items": {
+      "food": {
+        "price": 1,
+        "amount": 10
+      },
+      "medicine": {
+        "price": 1,
+        "amount": 2
+      },
+      "filters": {
+        "price": 1,
+        "amount": 1
+      },
+      "kits": {
+        "price": 1,
+        "amount": 2
+      }
+    }
+  },
+  "events": {
+    "chancePerNight": 0.7,
+    "fromDay": 7
+  }
+}

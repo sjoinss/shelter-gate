@@ -1,0 +1,33 @@
+{
+  "height": ["작은 편", "보통", "큰 편"],
+  "build": ["마른", "보통", "건장한", "통통한"],
+  "hair": [
+    { "text": "짧은 검은 머리", "ages": ["child", "adult"] },
+    { "text": "긴 검은 생머리", "ages": ["child", "adult"] },
+    { "text": "붉은 곱슬머리", "ages": ["child", "adult"] },
+    { "text": "검은 곱슬머리", "ages": ["child", "adult", "elder"] },
+    { "text": "갈색 단발머리", "ages": ["child", "adult"] },
+    { "text": "긴 갈색 머리", "ages": ["adult"] },
+    { "text": "짧은 갈색 머리", "ages": ["child", "adult"] },
+    { "text": "희끗한 짧은 머리", "ages": ["adult", "elder"] },
+    { "text": "짧은 백발", "ages": ["elder"] },
+    { "text": "긴 백발을 묶은 머리", "ages": ["elder"] },
+    { "text": "민머리", "ages": ["adult", "elder"] },
+    { "text": "탈색한 노란 머리", "ages": ["adult"] }
+  ],
+  "feature": [
+    "들창코",
+    "매부리코",
+    "왼쪽 뺨 흉터",
+    "오른쪽 눈썹 위 흉터",
+    "두꺼운 뿔테 안경",
+    "둥근 금속테 안경",
+    "얼굴 가득한 주근깨",
+    "턱 아래 큰 점",
+    "이마의 화상 자국",
+    "짙은 일자 눈썹",
+    "처진 눈",
+    "덧니"
+  ],
+  "items": ["none", "none", "bag", "backpack"]
+}

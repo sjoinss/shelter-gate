@@ -1,0 +1,129 @@
+/* 디자인 토큰 — "지하철 환승역을 개조한 대피소의 심사 창구"
+   타일 벽 · 역 안내판 · 비상등에 비친 유리창 · 먹지 복사 서식 · 고무 도장 */
+:root {
+  /* 공간 */
+  --wall: #263632; /* 승강장 타일 벽 */
+  --wall-grout: #2e413c; /* 타일 줄눈 */
+  --wall-raised: #33453f; /* 벽에 붙은 금속 판 (버튼, 바) */
+  --wall-raised-hover: #3d524b;
+  --wall-edge: #566a63;
+  --on-wall: #e9eeec;
+  --on-wall-soft: #b9c6c1;
+
+  /* 역 안내판 */
+  --sign: #182740;
+  --sign-text: #f3f5f8;
+  --sign-soft: #b8c3d6;
+  --line-marker: #e2a52c; /* 대피소 노선 표지 원 */
+  --line-marker-ink: #182740;
+
+  /* 창구 유리 (뒤에서 비상등이 비침) */
+  --glass: #b4884c;
+  --glass-edge: #6e5124;
+  --silhouette: #1d150c;
+
+  /* 종이 (먹지 복사 서식별 색) */
+  --paper: #eceee9; /* 규정집, 공문 */
+  --paper-idcard: #e3e9ee;
+  --paper-permit: #f1e5b2; /* 노란 사본 */
+  --paper-list: #f1d7d0; /* 분홍 사본 */
+  --paper-health: #d6e7d1; /* 연두 사본 */
+  --paper-cert: #f8f8f4;
+  --paper-note: #f4f1dc; /* 수첩 */
+  --paper-note-line: #c9cfd8;
+  --paper-note-margin: #d98b84;
+
+  /* 잉크 */
+  --ink: #1c2233;
+  --ink-soft: #4b5466;
+  --ink-faint: #7c8596;
+  --ink-line: #9aa3b0; /* 서식 칸 선 */
+
+  /* 도장 잉크 */
+  --stamp-approve: #1f4fa8;
+  --stamp-deny: #ad2a22;
+  --stamp-quarantine: #8a560a;
+  --on-stamp: #ffffff;
+
+  /* 상태 (항상 기호 + 글과 함께) */
+  --ok: #2f7a3e;
+  --warn: #9a5c00;
+  --bad: #ad2a22;
+  --ok-on-wall: #8fd49c;
+  --warn-on-wall: #f0c46a;
+  --bad-on-wall: #f29b93;
+
+  /* 지적 모드 (형광펜) */
+  --highlight: #ffe36e;
+  --highlight-edge: #b58a00;
+
+  /* 포커스: 흰 선 + 파란 바깥 선 — 타일 벽과 종이 양쪽에서 보임 */
+  --focus-inner: #ffffff;
+  --focus-outer: #1f4fa8;
+
+  /* 간격 (4px 단위) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* 반경: 물건마다 다르다 */
+  --radius-card: 10px; /* 플라스틱 대피카드 */
+  --radius-paper: 2px; /* 종이 */
+  --radius-metal: 3px; /* 금속 버튼 */
+  --radius-tab: 8px; /* 서류철 색인 탭 */
+
+  /* 종이가 책상에 놓인 그림자 (번지지 않는 단단한 그림자) */
+  --paper-shadow: 3px 3px 0 rgba(0, 0, 0, 0.32);
+
+  /* 글자: 웹폰트 없음. 서식에 인쇄된 글자는 바탕(명조), 써넣은 값과 화면 글자는 고딕 */
+  --font-scale: 1;
+  --font-sans: system-ui, -apple-system, 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+  --font-serif: 'Batang', '바탕', 'AppleMyungjo', 'Nanum Myeongjo', 'Noto Serif KR', 'Times New Roman', serif;
+  --text-xs: calc(0.8125rem * var(--font-scale));
+  --text-sm: calc(0.875rem * var(--font-scale));
+  --text-md: calc(1rem * var(--font-scale));
+  --text-lg: calc(1.1875rem * var(--font-scale));
+  --text-xl: calc(1.5rem * var(--font-scale));
+  --text-2xl: calc(2.25rem * var(--font-scale));
+  --line-height: 1.6;
+  --line-height-serif: 1.75;
+
+  --touch-min: 44px;
+  --duration-fast: 120ms;
+}
+
+/* 고대비 */
+:root[data-contrast='high'] {
+  --wall: #000000;
+  --wall-grout: #000000;
+  --wall-raised: #1a1a1a;
+  --wall-raised-hover: #2a2a2a;
+  --wall-edge: #ffffff;
+  --on-wall: #ffffff;
+  --on-wall-soft: #ffffff;
+  --glass: #c9a060;
+  --paper: #ffffff;
+  --paper-idcard: #ffffff;
+  --paper-permit: #ffffff;
+  --paper-list: #ffffff;
+  --paper-health: #ffffff;
+  --paper-cert: #ffffff;
+  --paper-note: #ffffff;
+  --ink: #000000;
+  --ink-soft: #000000;
+  --ink-faint: #333333;
+  --ink-line: #000000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+  }
+}
+:root[data-motion='reduced'] {
+  --duration-fast: 0ms;
+}

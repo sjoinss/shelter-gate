@@ -1,0 +1,341 @@
+{
+  "rules": [
+    {
+      "id": "R-ID-EXPIRY",
+      "since": 1,
+      "category": "document",
+      "priority": 20,
+      "text": "대피카드 유효기간이 오늘보다 이전이면 거부한다. (유효기간 당일까지는 유효)",
+      "check": {
+        "op": "before",
+        "field": "idCard.expiry",
+        "ref": "today"
+      },
+      "verdict": "deny",
+      "reason": "대피카드 만료"
+    },
+    {
+      "id": "R-NAME-MATCH",
+      "since": 1,
+      "category": "document",
+      "priority": 20,
+      "text": "대피카드의 이름이 본인 진술이나 다른 서류의 이름과 한 글자라도 다르면 거부한다.",
+      "check": {
+        "op": "mismatch",
+        "field": "idCard.name",
+        "against": [
+          "statement.name",
+          "permit.name",
+          "healthRecord.name",
+          "medicalCert.name"
+        ]
+      },
+      "verdict": "deny",
+      "reason": "이름 불일치"
+    },
+    {
+      "id": "R-APPEARANCE",
+      "since": 1,
+      "category": "document",
+      "priority": 20,
+      "text": "대피카드의 인상착의(키·체격·머리·특징)가 외모 메모와 하나라도 다르면 거부한다.",
+      "check": {
+        "op": "mismatch",
+        "field": "idCard.appearance",
+        "against": [
+          "observed.appearance"
+        ]
+      },
+      "verdict": "deny",
+      "reason": "인상착의 불일치"
+    },
+    {
+      "id": "R-DISTRICT-CODE",
+      "since": 2,
+      "category": "document",
+      "priority": 20,
+      "text": "거주구역 코드가 구역 목록에 없거나 형식(HS-두 자리 숫자-블록 대문자)이 틀리면 거부한다.",
+      "check": {
+        "op": "notIn",
+        "field": "idCard.district",
+        "ref": "validDistrictCodes"
+      },
+      "verdict": "deny",
+      "reason": "구역 코드 오류"
+    },
+    {
+      "id": "R-DISTRICT-CLOSED",
+      "since": 2,
+      "until": 6,
+      "category": "document",
+      "priority": 20,
+      "text": "오늘 폐쇄된 구역에 거주하는 사람은 거부한다. 폐쇄 구역은 구역 목록에 표시된다.",
+      "check": {
+        "op": "in",
+        "field": "idCard.district",
+        "ref": "closedDistrictCodes"
+      },
+      "verdict": "deny",
+      "reason": "폐쇄 구역 거주"
+    },
+    {
+      "id": "R-DISTRICT-CLOSED",
+      "since": 6,
+      "category": "document",
+      "priority": 20,
+      "text": "오늘 폐쇄된 구역에 거주하는 사람은 거부한다. 단, 70세 이상 고령자가 일행에 있으면(본인 포함) 입장을 허가한다.",
+      "check": {
+        "op": "in",
+        "field": "idCard.district",
+        "ref": "closedDistrictCodes"
+      },
+      "unless": {
+        "op": "==",
+        "field": "observed.hasElder",
+        "value": true
+      },
+      "verdict": "deny",
+      "reason": "폐쇄 구역 거주",
+      "until": 9
+    },
+    {
+      "id": "R-DISTRICT-CLOSED",
+      "since": 9,
+      "category": "document",
+      "priority": 20,
+      "text": "오늘 폐쇄된 구역에 거주하는 사람은 거부한다. 단, 70세 이상 고령자가 일행에 있거나(본인 포함), 유효한 의료인 증명서(면허번호 형식·소속 기관·유효기간이 모두 맞음)를 낸 사람은 입장을 허가한다.",
+      "check": {
+        "op": "in",
+        "field": "idCard.district",
+        "ref": "closedDistrictCodes"
+      },
+      "unless": {
+        "op": "any",
+        "checks": [
+          {
+            "op": "==",
+            "field": "observed.hasElder",
+            "value": true
+          },
+          {
+            "op": "all",
+            "checks": [
+              {
+                "op": "matches",
+                "field": "medicalCert.license",
+                "pattern": "^HS-(MD|RN)-[0-9]{5}$"
+              },
+              {
+                "op": "in",
+                "field": "medicalCert.affiliation",
+                "ref": "hospitals"
+              },
+              {
+                "op": ">=",
+                "field": "medicalCert.validUntil",
+                "ref": "today"
+              }
+            ]
+          }
+        ]
+      },
+      "verdict": "deny",
+      "reason": "폐쇄 구역 거주"
+    },
+    {
+      "id": "R-PERMIT-DATE",
+      "since": 3,
+      "category": "document",
+      "priority": 20,
+      "text": "대피 허가증의 발급일이 오늘보다 이후이거나, 유효일이 오늘보다 이전이면 거부한다.",
+      "check": {
+        "op": "any",
+        "checks": [
+          {
+            "op": "after",
+            "field": "permit.issued",
+            "ref": "today"
+          },
+          {
+            "op": "before",
+            "field": "permit.validUntil",
+            "ref": "today"
+          }
+        ]
+      },
+      "verdict": "deny",
+      "reason": "허가증 날짜 오류"
+    },
+    {
+      "id": "R-PERMIT-SHELTER",
+      "since": 3,
+      "category": "document",
+      "priority": 20,
+      "text": "대피 허가증의 허가 대피소가 '제3 지하 대피소'가 아니면 거부한다.",
+      "check": {
+        "op": "notEqual",
+        "field": "permit.shelter",
+        "ref": "shelterName"
+      },
+      "verdict": "deny",
+      "reason": "허가 대피소 불일치"
+    },
+    {
+      "id": "R-COMPANION-COUNT",
+      "since": 3,
+      "category": "document",
+      "priority": 20,
+      "text": "일행이 있으면 동행자 명부의 총 인원(신청자 포함)이 창구 앞 실제 인원과 같아야 한다. 다르면 거부한다.",
+      "check": {
+        "op": "mismatch",
+        "field": "companionList.total",
+        "against": [
+          "observed.groupSize"
+        ]
+      },
+      "verdict": "deny",
+      "reason": "동행 인원 불일치"
+    },
+    {
+      "id": "R-TEMP-QUARANTINE",
+      "since": 4,
+      "category": "health",
+      "priority": 10,
+      "text": "모든 방문자의 체온을 잰다. 37.5°C 이상이면 5초 뒤 다시 재고, 다시 재도 37.5°C 이상이면 격리한다. (서류 문제가 있으면 격리하지 않고 거부)",
+      "check": {
+        "op": ">=",
+        "field": "exam.temperatureFinal",
+        "value": 37.5
+      },
+      "verdict": "quarantine",
+      "reason": "발열"
+    },
+    {
+      "id": "R-HEALTH-CONTRADICTION",
+      "since": 5,
+      "category": "document",
+      "priority": 20,
+      "text": "건강 기록 카드의 '최근 진료' 증상을 증상 문답에서 없다고 답하면 허위 진술로 거부한다.",
+      "check": {
+        "op": "answerDenies",
+        "field": "healthRecord.recentSymptom",
+        "against": "exam.symptoms"
+      },
+      "verdict": "deny",
+      "reason": "건강 기록 모순"
+    },
+    {
+      "id": "R-SYMPTOM-QUARANTINE",
+      "since": 5,
+      "category": "health",
+      "priority": 10,
+      "text": "모든 방문자에게 증상 문답을 한다. 기침·발열·구토·호흡곤란 중 하나라도 있다고 답하면 격리한다.",
+      "check": {
+        "op": "anyTrue",
+        "field": "exam.symptoms"
+      },
+      "verdict": "quarantine",
+      "reason": "증상 응답",
+      "until": 7
+    },
+    {
+      "id": "R-MINOR-ALONE",
+      "since": 6,
+      "category": "document",
+      "priority": 20,
+      "text": "16세 미만이 성인 동행자 없이 혼자 오면 거부한다.",
+      "check": {
+        "op": "all",
+        "checks": [
+          {
+            "op": "<",
+            "field": "idCard.age",
+            "value": 16
+          },
+          {
+            "op": "==",
+            "field": "observed.adultCompanions",
+            "value": 0
+          }
+        ]
+      },
+      "verdict": "deny",
+      "reason": "보호자 없는 미성년"
+    },
+    {
+      "id": "R-KIT-QUARANTINE",
+      "since": 7,
+      "category": "health",
+      "priority": 10,
+      "text": "증상 문답에서 증상이 하나라도 있다고 답하면 신속 키트로 검사한다. 키트 양성이면 격리하고, 음성이면 통과시킨다. 키트가 떨어졌으면 증상 응답자는 격리한다.",
+      "check": {
+        "op": "all",
+        "checks": [
+          {
+            "op": "anyTrue",
+            "field": "exam.symptoms"
+          },
+          {
+            "op": "==",
+            "field": "exam.rapidKit",
+            "value": "pos"
+          }
+        ]
+      },
+      "verdict": "quarantine",
+      "reason": "키트 양성"
+    },
+    {
+      "id": "R-SPO2-DENY",
+      "since": 8,
+      "category": "health",
+      "priority": 15,
+      "text": "모든 방문자의 산소포화도를 잰다. 94% 미만이면 중증 의심으로 받지 않고 의료시설로 안내한다(거부).",
+      "check": {
+        "op": "<",
+        "field": "exam.spo2",
+        "value": 94
+      },
+      "verdict": "deny",
+      "reason": "산소포화도 저하"
+    },
+    {
+      "id": "R-MED-FORGED",
+      "since": 10,
+      "category": "document",
+      "priority": 20,
+      "text": "의료인 증명서의 면허번호 형식이 틀리거나 소속 기관이 규정집 목록에 없으면 위조로 보고 거부한다.",
+      "check": {
+        "op": "any",
+        "checks": [
+          {
+            "op": "notMatches",
+            "field": "medicalCert.license",
+            "pattern": "^HS-(MD|RN)-[0-9]{5}$"
+          },
+          {
+            "op": "notIn",
+            "field": "medicalCert.affiliation",
+            "ref": "hospitals"
+          }
+        ]
+      },
+      "verdict": "deny",
+      "reason": "위조 의료인 증명서"
+    },
+    {
+      "id": "R-BREATH-QUARANTINE",
+      "since": 10,
+      "category": "health",
+      "priority": 10,
+      "text": "모든 방문자의 호흡을 관찰한다. 숨 쉴 때 어깨가 크게 들썩이는 이상 호흡이면 격리한다.",
+      "check": {
+        "op": "==",
+        "field": "exam.breathing",
+        "value": "labored"
+      },
+      "verdict": "quarantine",
+      "reason": "호흡 이상"
+    }
+  ]
+}

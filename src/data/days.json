@@ -1,0 +1,354 @@
+{
+  "lastPlayableDay": 10,
+  "days": [
+    {
+      "day": 1,
+      "visitors": 6,
+      "timeLimitSec": 300,
+      "documents": [
+        "idCard"
+      ],
+      "tools": [],
+      "faultRatio": 0.5,
+      "infectedRatio": 0,
+      "exceptionRatio": 0,
+      "twoFaultChance": 0,
+      "companionChance": 0,
+      "closedDistricts": [],
+      "questions": [
+        "name"
+      ],
+      "briefing": "제3 지하 대피소 출입 심사 첫날입니다. 오늘은 대피카드만 확인합니다. 카드의 유효기간, 이름, 인상착의를 확인하십시오. 이름은 직접 물어서 확인할 수 있습니다.",
+      "tutorial": [
+        "방문자가 서면 옆에 외모 메모가 적힙니다. 대피카드의 인상착의와 비교하십시오.",
+        "[이름을 묻는다]로 본인 진술을 들을 수 있습니다. 질문마다 시간이 2초 소모됩니다.",
+        "이상한 점을 찾으면 [불일치 지적]을 누르고 맞지 않는 항목 두 개를 차례로 탭하십시오. 맞으면 거부 사유가 자동으로 채워집니다.",
+        "거부할 때는 사유를 골라야 합니다. 사유가 틀리면 오심입니다.",
+        "하루 오심 2회까지는 경고로 끝나지만, 3회째부터 보급 포인트가 차감됩니다."
+      ],
+      "hiddenRatio": 0,
+      "medicRatio": 0
+    },
+    {
+      "day": 2,
+      "visitors": 8,
+      "timeLimitSec": 300,
+      "documents": [
+        "idCard"
+      ],
+      "tools": [],
+      "faultRatio": 0.5,
+      "infectedRatio": 0,
+      "exceptionRatio": 0,
+      "twoFaultChance": 0.1,
+      "companionChance": 0,
+      "closedDistricts": [
+        "05"
+      ],
+      "questions": [
+        "name",
+        "district"
+      ],
+      "briefing": "오늘부터 거주구역 코드를 확인합니다. 구역 목록에 없는 코드는 위조이며, 북천구(05)는 상수도 오염으로 폐쇄되었습니다.",
+      "tutorial": [],
+      "hiddenRatio": 0,
+      "medicRatio": 0
+    },
+    {
+      "day": 3,
+      "visitors": 9,
+      "timeLimitSec": 300,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList"
+      ],
+      "tools": [],
+      "faultRatio": 0.55,
+      "infectedRatio": 0,
+      "exceptionRatio": 0,
+      "twoFaultChance": 0.15,
+      "companionChance": 0.4,
+      "closedDistricts": [
+        "05",
+        "07"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "오늘부터 대피 허가증을 함께 제출받습니다. 가족이나 이웃과 함께 온 경우 동행자 명부도 확인하십시오. 새벽구(07)가 추가로 폐쇄되었습니다.",
+      "tutorial": [
+        "창구 앞 그림자 수가 실제 인원입니다. 동행자 명부의 총 인원과 비교하십시오."
+      ],
+      "hiddenRatio": 0,
+      "medicRatio": 0
+    },
+    {
+      "day": 4,
+      "visitors": 10,
+      "timeLimitSec": 300,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList"
+      ],
+      "tools": [
+        "temperature"
+      ],
+      "faultRatio": 0.35,
+      "infectedRatio": 0.15,
+      "exceptionRatio": 0,
+      "twoFaultChance": 0.15,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "시내에서 B-2형 호흡기 감염증 환자가 늘고 있습니다. 오늘부터 모든 방문자의 체온을 재십시오. 격리실 6석이 마련되었습니다. 서류에 문제가 있으면 체온과 관계없이 거부합니다.",
+      "tutorial": [
+        "[체온 측정]은 3초가 걸립니다. 37.5°C 이상이 나오면 5초 뒤 [재측정]으로 다시 재십시오. 뛰어온 사람은 처음에 높게 나올 수 있습니다.",
+        "격리 대상은 [◐ 격리]를 누르십시오. 일행 전원이 격리실을 씁니다. 자리가 모자라면 '격리실 만석'으로 거부합니다.",
+        "격리 대상을 승인하면 중대 오심입니다. 경고 없이 바로 벌점이 부과되고, 밤사이 대피소에 감염이 퍼집니다."
+      ],
+      "hiddenRatio": 0,
+      "medicRatio": 0
+    },
+    {
+      "day": 5,
+      "visitors": 11,
+      "timeLimitSec": 330,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms"
+      ],
+      "faultRatio": 0.35,
+      "infectedRatio": 0.15,
+      "exceptionRatio": 0,
+      "twoFaultChance": 0.15,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "오늘부터 건강 기록 카드를 제출받고, 모든 방문자에게 증상 문답을 합니다. 증상이 하나라도 있다고 답하면 격리합니다. 건강 기록에 최근 진료한 증상이 적혀 있는데 문답에서 없다고 답하면 허위 진술로 거부합니다.",
+      "tutorial": [
+        "[증상 문답]은 8초가 걸리고 기침·발열·구토·호흡곤란 네 가지를 묻습니다.",
+        "건강 기록 카드의 '최근 진료'와 문답 답변을 비교하십시오. 불일치 지적으로 두 항목을 고를 수 있습니다."
+      ],
+      "hiddenRatio": 0,
+      "medicRatio": 0
+    },
+    {
+      "day": 6,
+      "visitors": 11,
+      "timeLimitSec": 330,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms"
+      ],
+      "faultRatio": 0.35,
+      "infectedRatio": 0.12,
+      "exceptionRatio": 0.1,
+      "twoFaultChance": 0.15,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "서하구(02)가 추가로 폐쇄되었습니다. 오늘부터 16세 미만이 성인 없이 혼자 오면 돌려보냅니다. 단, 70세 이상 고령자가 일행에 있으면(본인 포함) 폐쇄 구역 출신이라도 입장을 허가합니다.",
+      "tutorial": [
+        "고령자 예외는 폐쇄 구역 규정에만 적용됩니다. 다른 서류 문제나 발열은 그대로 처리합니다."
+      ],
+      "hiddenRatio": 0,
+      "medicRatio": 0
+    },
+    {
+      "day": 7,
+      "visitors": 11,
+      "timeLimitSec": 360,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit"
+      ],
+      "faultRatio": 0.3,
+      "infectedRatio": 0.18,
+      "hiddenRatio": 0.05,
+      "exceptionRatio": 0,
+      "medicRatio": 0,
+      "twoFaultChance": 0.15,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "신속 키트가 지급되었습니다. 오늘부터 증상이 있다고 답한 사람은 바로 격리하지 않고 키트로 확인합니다. 키트 양성이면 격리, 음성이면 통과입니다. 키트는 하나에 20초가 걸리고 재고가 줄어듭니다. 키트가 떨어지면 증상 응답자는 격리합니다.",
+      "tutorial": [
+        "체온이 37.5°C 이상이면 키트 없이 바로 격리합니다.",
+        "잠복기 감염자는 어떤 장비로도 잡히지 않을 수 있습니다. 그런 경우는 오심으로 치지 않습니다."
+      ]
+    },
+    {
+      "day": 8,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2"
+      ],
+      "faultRatio": 0.3,
+      "infectedRatio": 0.17,
+      "hiddenRatio": 0.05,
+      "exceptionRatio": 0.08,
+      "medicRatio": 0,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "산소포화도 측정기가 들어왔습니다. 94% 미만이면 중증 의심으로 이곳에서 받지 않고 의료시설로 안내합니다(거부). 은하구(08)가 추가로 폐쇄되었습니다.",
+      "tutorial": [
+        "산소포화도 측정은 5초가 걸립니다. 중증 의심은 서류 문제가 없어도 거부 사유 '산소포화도 저하'로 돌려보냅니다."
+      ]
+    },
+    {
+      "day": 9,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord",
+        "medicalCert"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2"
+      ],
+      "faultRatio": 0.3,
+      "infectedRatio": 0.15,
+      "hiddenRatio": 0.05,
+      "exceptionRatio": 0.05,
+      "medicRatio": 0.12,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "의료 인력이 부족합니다. 오늘부터 유효한 의료인 증명서를 가진 사람은 폐쇄 구역 출신이라도 들입니다. 들어온 의료인은 대피소 의료 업무를 돕습니다.",
+      "tutorial": [
+        "의료인 증명서는 면허번호 형식, 소속 기관, 유효기간을 규정집과 맞춰 보십시오. 하나라도 틀리면 예외가 적용되지 않습니다."
+      ]
+    },
+    {
+      "day": 10,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord",
+        "medicalCert"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2",
+        "breathing"
+      ],
+      "faultRatio": 0.32,
+      "infectedRatio": 0.15,
+      "hiddenRatio": 0.05,
+      "exceptionRatio": 0.05,
+      "medicRatio": 0.1,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "briefing": "위조 의료인 증명서가 돌고 있습니다. 면허번호 형식이나 소속 기관이 맞지 않는 증명서를 내면 위조로 거부합니다. 호흡 관찰도 시작합니다. 숨 쉴 때 어깨가 크게 들썩이면 격리합니다.",
+      "tutorial": [
+        "호흡 관찰은 5초가 걸립니다. 관찰하는 동안 그림자의 어깨 움직임을 보십시오."
+      ]
+    }
+  ]
+}
