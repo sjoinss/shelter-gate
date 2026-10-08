@@ -51,5 +51,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.js'],
+    // 공정성 검사(14일 × 시드 300개)는 CI 러너에서 5초를 넘을 수 있다
+    testTimeout: 30_000,
   },
 });
