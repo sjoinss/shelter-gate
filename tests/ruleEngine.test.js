@@ -33,7 +33,7 @@ function reasonsFor(v, day = 3) {
 describe('ruleEngine', () => {
   it('정상 방문자는 승인', () => {
     const r = evaluate(makeVisitor(), activeRules(allRules, 3), buildContext(gameData, 3));
-    expect(r).toEqual({ verdict: 'approve', reasons: [], violated: [] });
+    expect(r).toEqual({ verdict: 'approve', reasons: [], violated: [], conflicts: [] });
   });
 
   it('활성 규정은 since/until을 따른다', () => {

@@ -26,6 +26,7 @@ export function renderNight({ store, navigate }) {
   ];
   if (consuming || day + 1 >= gameData.balance.resources.consumeFromDay) {
     rows.push(['식량', `${shelterAfter.food}인분`], ['의약품', `${shelterAfter.medicine}개`], ['필터', `${shelterAfter.filters}개`], ['키트', `${shelterAfter.kits}개`]);
+    if (day + 1 >= 11) rows.push(['PCR 시약', `${shelterAfter.reagents}개`]);
   }
 
   const sheet = officialSheet({

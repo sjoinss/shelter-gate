@@ -16,8 +16,8 @@ export function createShelter(balance) {
   };
 }
 
-export const RESOURCE_KEYS = ['food', 'medicine', 'filters', 'kits'];
-export const RESOURCE_LABEL = { food: '식량', medicine: '의약품', filters: '필터', kits: '키트' };
+export const RESOURCE_KEYS = ['food', 'medicine', 'filters', 'kits', 'reagents'];
+export const RESOURCE_LABEL = { food: '식량', medicine: '의약품', filters: '필터', kits: '키트', reagents: 'PCR 시약' };
 
 export function infectedInQuarantine(shelter) {
   return shelter.quarantine.filter((e) => e.infected).reduce((s, e) => s + e.groupSize, 0);
@@ -31,6 +31,7 @@ export function nightlyNeed(shelter, balance) {
     medicine: infectedInQuarantine(shelter) * r.medicinePerInfected,
     filters: r.filtersPerDay + (shelter.occupancy > r.extraFilterOccupancy ? 1 : 0),
     kits: 0,
+    reagents: 0,
   };
 }
 
@@ -76,7 +77,12 @@ function groupName(e) {
  * @param input { day, quarantined: [{ name, groupSize, infected }], approvedInfected }
  * @returns {{ shelter, report: { kind: 'info'|'warn'|'ok', text }[], found: number }}
  */
-export function runNight(shelter, { day, quarantined, approvedInfected, kitsLeft, medicsAdmitted = 0 }, rng, balance) {
+export function runNight(
+  shelter,
+  { day, quarantined, approvedInfected, kitsLeft, reagentsLeft, medicsAdmitted = 0, outage = false },
+  rng,
+  balance,
+) {
   const inf = balance.infection;
   const t = balance.scoring.trust;
   const report = [];
@@ -89,6 +95,7 @@ export function runNight(shelter, { day, quarantined, approvedInfected, kitsLeft
     medicine: shelter.medicine,
     filters: shelter.filters,
     kits: kitsLeft ?? shelter.kits,
+    reagents: reagentsLeft ?? shelter.reagents ?? 0,
   };
   const consuming = day >= res.consumeFromDay;
 
@@ -114,6 +121,7 @@ export function runNight(shelter, { day, quarantined, approvedInfected, kitsLeft
   if (found > 0) {
     let spread = spreadInfections(rng, found, occupancy, shelter.capacity, balance);
     if (consuming && stock.filters <= 0) spread = Math.ceil(spread * res.noFilterSpreadMultiplier); // 환기 불량
+    if (outage) spread = Math.ceil(spread * res.outageSpreadMultiplier); // 정전으로 환기 정지
     const free = Math.max(0, shelter.quarantineSeats - queue.reduce((s, e) => s + e.groupSize, 0));
     const moved = Math.min(found, free);
     if (moved > 0) {
@@ -156,6 +164,10 @@ export function runNight(shelter, { day, quarantined, approvedInfected, kitsLeft
     keep.push(e);
   }
 
+  if (outage) {
+    report.push({ kind: 'warn', text: '낮의 정전으로 환기 설비가 한동안 멈췄습니다. 공기가 탁해졌습니다.' });
+  }
+
   // 4. 의료인 합류
   if (medicsAdmitted > 0) {
     stock.medicine += medicsAdmitted * res.medicReward.medicine;
@@ -180,6 +192,12 @@ export function runNight(shelter, { day, quarantined, approvedInfected, kitsLeft
       }
     }
     if (usedText.length) report.push({ kind: 'info', text: `밤사이 ${usedText.join(', ')}을(를) 썼습니다.` });
+  }
+
+  // 6. 본부의 PCR 시약 지급
+  if (day >= res.reagentAllotment.fromNight) {
+    stock.reagents += res.reagentAllotment.amount;
+    report.push({ kind: 'info', text: `본부에서 PCR 시약 ${res.reagentAllotment.amount}개가 도착했습니다.` });
   }
 
   if (report.length === 0) report.push({ kind: 'ok', text: '특이 사항 없음.' });

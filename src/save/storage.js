@@ -1,7 +1,7 @@
 // localStorage 저장/불러오기 (20장, 19-2 ⑥).
 // 저장 데이터는 변조될 수 있는 입력으로 취급한다: 허용 목록으로 검증하고, 통과한 필드만 새 객체에 복사한다.
 
-export const SAVE_VERSION = 3; // 2: 격리실·감염 상태 (M2), 3: 물자·이벤트 기록 (M3)
+export const SAVE_VERSION = 4; // 2: 격리실·감염 상태 (M2), 3: 물자·이벤트 기록 (M3), 4: 시약·엔딩 통계 (M4)
 export const KEYS = Object.freeze({
   save: 'shelterGate.v1.save',
   settings: 'shelterGate.v1.settings',
@@ -9,7 +9,7 @@ export const KEYS = Object.freeze({
 
 const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 const MAX_RAW_LENGTH = 200_000;
-const MAX_DAY = 14;
+const MAX_DAY = 15; // 14일차를 마친 뒤의 '다음 날'까지
 
 /** 프로토타입 오염 키를 버리는 JSON 파서. 실패 시 null */
 export function safeParse(text) {
@@ -44,7 +44,7 @@ function validateQuarantineEntry(e) {
   };
 }
 
-const RESOURCE_FIELDS = ['food', 'medicine', 'filters', 'kits'];
+const RESOURCE_FIELDS = ['food', 'medicine', 'filters', 'kits', 'reagents'];
 const EVENT_ID = /^[a-z0-9-]{1,30}$/;
 
 function validateFlags(f) {
@@ -83,6 +83,7 @@ function validateShelter(s) {
     medicine: s.medicine,
     filters: s.filters,
     kits: s.kits,
+    reagents: s.reagents,
     flags,
     trust: s.trust,
     supplyPoints: s.supplyPoints,
@@ -91,7 +92,7 @@ function validateShelter(s) {
 
 function validateHistoryEntry(h) {
   if (!isObj(h)) return null;
-  const fields = ['day', 'processed', 'correct', 'mistakes', 'unprocessed', 'approvedPeople', 'trustDelta', 'infections', 'majors'];
+  const fields = ['day', 'processed', 'correct', 'mistakes', 'unprocessed', 'approvedPeople', 'trustDelta', 'infections', 'majors', 'denied', 'hiddenAdmitted'];
   const out = {};
   for (const f of fields) {
     const min = f === 'trustDelta' ? -1000 : 0;

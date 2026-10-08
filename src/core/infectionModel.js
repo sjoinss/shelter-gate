@@ -46,6 +46,7 @@ export function rollHealth(rng, stage, balance) {
   const rapidKit = rng.chance(det.rapidKit[stage]) ? 'pos' : 'neg';
   const spo2 = rng.chance(det.spo2Low[stage]) ? rng.int(86, 93) : rng.int(95, 99);
   const breathing = rng.chance(det.breathing[stage]) ? 'labored' : 'normal';
+  const pcr = rng.chance(det.pcr[stage]) ? 'pos' : 'neg';
 
   // 겉으로 보이는 징후 (메모 + 그림자 동작)
   if (stage === 'symptomatic' && rng.chance(inf.visibleSignChance)) {
@@ -55,7 +56,7 @@ export function rollHealth(rng, stage, balance) {
   return {
     infected: stage !== 'none',
     stage,
-    results: { temperature: { first, recheck }, temperatureFinal, symptoms, rapidKit, spo2, breathing },
+    results: { temperature: { first, recheck }, temperatureFinal, symptoms, rapidKit, spo2, breathing, pcr },
     signs,
   };
 }
@@ -88,6 +89,9 @@ export function explainHealth(exam, activeRuleIds, threshold) {
     lines.push(
       `증상 문답에서 ${yes.join(', ')} 증상이 있다고 답했으므로 키트 검사 대상입니다. 키트 결과는 ${exam.rapidKit === 'pos' ? '양성' : '음성'}입니다.`,
     );
+  }
+  if (activeRuleIds.has('R-PCR-QUARANTINE') && yes.length && exam.rapidKit === 'neg') {
+    lines.push(`증상 응답이 있는데 키트가 음성이므로 PCR 확인 대상입니다. PCR 결과는 ${exam.pcr === 'pos' ? '양성' : '음성'}입니다.`);
   }
   if (activeRuleIds.has('R-SPO2-DENY') && exam.spo2 < 94) {
     lines.push(`산소포화도 ${exam.spo2}%로 94% 미만입니다. 중증 의심으로 의료시설에 안내해야 했습니다.`);

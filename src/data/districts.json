@@ -93,5 +93,15 @@
     "동림대학병원"
   ],
   "licensePattern": "^HS-(MD|RN)-[0-9]{5}$",
-  "licenseFormatText": "HS-MD(의사) 또는 HS-RN(간호사) 뒤에 숫자 다섯 자리. 예: HS-MD-20417"
+  "licenseFormatText": "HS-MD(의사) 또는 HS-RN(간호사) 뒤에 숫자 다섯 자리. 예: HS-MD-20417",
+  "directiveDistricts": {
+    "12": [
+      "07"
+    ]
+  },
+  "otherShelterConfirmers": [
+    "제1 지하 대피소 의무실",
+    "제2 지하 대피소 의무실",
+    "제5 지하 대피소 의무실"
+  ]
 }

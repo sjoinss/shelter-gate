@@ -1650,3 +1650,14 @@ h2[tabindex='-1']:focus,
 .toast--error .toast__icon {
   background: var(--bad);
 }
+
+/* 정전: 유리창 뒤 비상등이 꺼지고 안내판이 어두워짐 */
+.inspection.is-outage .booth__window {
+  background: #3b3326;
+}
+.inspection.is-outage .station-bar {
+  filter: brightness(0.6);
+}
+.inspection.is-outage .desk {
+  background: rgba(0, 0, 0, 0.25);
+}

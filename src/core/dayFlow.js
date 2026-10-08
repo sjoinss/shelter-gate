@@ -30,6 +30,8 @@ export function startDay(data, baseSeed, day, shelter) {
     quarantineEnabled: rules.some((r) => r.verdict === 'quarantine'),
     kitsLeft: shelter.kits ?? 0,
     kitsUsed: 0,
+    reagentsLeft: shelter.reagents ?? 0,
+    powerOut: false, // 정전 중 (전기 장비 사용 불가)
     medicsAdmitted: 0,
     ended: false,
   };
@@ -78,6 +80,7 @@ export function recheckReadyAt(state, data) {
 export function useTool(state, tool, realElapsedSec, data) {
   const v = currentVisitor(state);
   if (!v || !state.dayDef.tools.includes(tool)) return { state, result: null };
+  if (state.powerOut && data.balance.outage.poweredTools.includes(tool)) return { state, result: null };
   const rec = state.exams[v.id] ?? {};
   const cost = data.balance.tools[tool].costSec;
   const now = gameTime(state, realElapsedSec) + cost;
@@ -106,6 +109,10 @@ export function useTool(state, tool, realElapsedSec, data) {
     if (rec.spo2Done) return { state, result: null };
     nextRec = { ...rec, spo2Done: true };
     result = { tool, value: v.exam.spo2 };
+  } else if (tool === 'pcr') {
+    if (rec.pcrDone || state.reagentsLeft <= 0) return { state, result: null };
+    nextRec = { ...rec, pcrDone: true };
+    result = { tool, value: v.exam.pcr };
   } else if (tool === 'breathing') {
     if (rec.breathingDone) return { state, result: null };
     nextRec = { ...rec, breathingDone: true };
@@ -119,6 +126,7 @@ export function useTool(state, tool, realElapsedSec, data) {
     next.kitsLeft = state.kitsLeft - 1;
     next.kitsUsed = state.kitsUsed + 1;
   }
+  if (tool === 'pcr') next.reagentsLeft = state.reagentsLeft - 1;
   return { state: next, result };
 }
 
@@ -170,7 +178,8 @@ export function decide(state, verdict, reason = null) {
   if (verdict === 'quarantine' && !canQuarantineCurrent(state)) return { state, judgement: null };
 
   const kitsOut = state.kitsLeft <= 0 && !state.exams[v.id]?.kitDone;
-  const judgement = judge(v, verdict, reason, { quarantineFull: !canQuarantineCurrent(state), kitsOut });
+  const reagentsOut = state.reagentsLeft <= 0 && !state.exams[v.id]?.pcrDone;
+  const judgement = judge(v, verdict, reason, { quarantineFull: !canQuarantineCurrent(state), kitsOut, reagentsOut });
   const size = v.observed.groupSize;
   const infected = v.truth.health?.infected ?? false;
   const next = {
@@ -192,6 +201,11 @@ export function decide(state, verdict, reason = null) {
   return { state: next, judgement };
 }
 
+/** 정전 시작/끝 (UI 타이머가 호출) */
+export function setPowerOut(state, on) {
+  return { ...state, powerOut: on };
+}
+
 export function endDay(state) {
   return { ...state, ended: true };
 }
@@ -206,7 +220,10 @@ export function dayResult(state) {
     approvedInfected: state.approvedInfected,
     quarantined: state.quarantined,
     kitsLeft: state.kitsLeft,
+    reagentsLeft: state.reagentsLeft,
     medicsAdmitted: state.medicsAdmitted,
+    denied: state.judgements.filter((j) => j.verdict === 'deny').length,
+    outage: !!state.dayDef.outage,
     // 잠복기라 장비로 못 잡고 승인한 감염자 (정산 안내용)
     undetected: state.judgements
       .map((j, i) => ({ j, v: state.visitors[i] }))

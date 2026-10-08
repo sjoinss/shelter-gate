@@ -1,5 +1,5 @@
 {
-  "lastPlayableDay": 10,
+  "lastPlayableDay": 14,
   "days": [
     {
       "day": 1,
@@ -27,7 +27,9 @@
         "하루 오심 2회까지는 경고로 끝나지만, 3회째부터 보급 포인트가 차감됩니다."
       ],
       "hiddenRatio": 0,
-      "medicRatio": 0
+      "medicRatio": 0,
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 2,
@@ -52,7 +54,9 @@
       "briefing": "오늘부터 거주구역 코드를 확인합니다. 구역 목록에 없는 코드는 위조이며, 북천구(05)는 상수도 오염으로 폐쇄되었습니다.",
       "tutorial": [],
       "hiddenRatio": 0,
-      "medicRatio": 0
+      "medicRatio": 0,
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 3,
@@ -83,7 +87,9 @@
         "창구 앞 그림자 수가 실제 인원입니다. 동행자 명부의 총 인원과 비교하십시오."
       ],
       "hiddenRatio": 0,
-      "medicRatio": 0
+      "medicRatio": 0,
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 4,
@@ -118,7 +124,9 @@
         "격리 대상을 승인하면 중대 오심입니다. 경고 없이 바로 벌점이 부과되고, 밤사이 대피소에 감염이 퍼집니다."
       ],
       "hiddenRatio": 0,
-      "medicRatio": 0
+      "medicRatio": 0,
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 5,
@@ -154,7 +162,9 @@
         "건강 기록 카드의 '최근 진료'와 문답 답변을 비교하십시오. 불일치 지적으로 두 항목을 고를 수 있습니다."
       ],
       "hiddenRatio": 0,
-      "medicRatio": 0
+      "medicRatio": 0,
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 6,
@@ -190,7 +200,9 @@
         "고령자 예외는 폐쇄 구역 규정에만 적용됩니다. 다른 서류 문제나 발열은 그대로 처리합니다."
       ],
       "hiddenRatio": 0,
-      "medicRatio": 0
+      "medicRatio": 0,
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 7,
@@ -228,7 +240,9 @@
       "tutorial": [
         "체온이 37.5°C 이상이면 키트 없이 바로 격리합니다.",
         "잠복기 감염자는 어떤 장비로도 잡히지 않을 수 있습니다. 그런 경우는 오심으로 치지 않습니다."
-      ]
+      ],
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 8,
@@ -267,7 +281,9 @@
       "briefing": "산소포화도 측정기가 들어왔습니다. 94% 미만이면 중증 의심으로 이곳에서 받지 않고 의료시설로 안내합니다(거부). 은하구(08)가 추가로 폐쇄되었습니다.",
       "tutorial": [
         "산소포화도 측정은 5초가 걸립니다. 중증 의심은 서류 문제가 없어도 거부 사유 '산소포화도 저하'로 돌려보냅니다."
-      ]
+      ],
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 9,
@@ -307,7 +323,9 @@
       "briefing": "의료 인력이 부족합니다. 오늘부터 유효한 의료인 증명서를 가진 사람은 폐쇄 구역 출신이라도 들입니다. 들어온 의료인은 대피소 의료 업무를 돕습니다.",
       "tutorial": [
         "의료인 증명서는 면허번호 형식, 소속 기관, 유효기간을 규정집과 맞춰 보십시오. 하나라도 틀리면 예외가 적용되지 않습니다."
-      ]
+      ],
+      "directiveRatio": 0,
+      "releasedRatio": 0
     },
     {
       "day": 10,
@@ -348,7 +366,186 @@
       "briefing": "위조 의료인 증명서가 돌고 있습니다. 면허번호 형식이나 소속 기관이 맞지 않는 증명서를 내면 위조로 거부합니다. 호흡 관찰도 시작합니다. 숨 쉴 때 어깨가 크게 들썩이면 격리합니다.",
       "tutorial": [
         "호흡 관찰은 5초가 걸립니다. 관찰하는 동안 그림자의 어깨 움직임을 보십시오."
+      ],
+      "directiveRatio": 0,
+      "releasedRatio": 0
+    },
+    {
+      "day": 11,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "faultRatio": 0.32,
+      "infectedRatio": 0.15,
+      "hiddenRatio": 0.07,
+      "exceptionRatio": 0.04,
+      "medicRatio": 0.08,
+      "directiveRatio": 0,
+      "releasedRatio": 0,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord",
+        "medicalCert"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2",
+        "breathing",
+        "pcr"
+      ],
+      "briefing": "정밀 검사(PCR) 장비가 들어왔지만 시약은 하루 한 개만 지급됩니다. 증상이 있다고 답했는데 키트가 음성이면 PCR로 확인합니다. 시약이 없으면 그런 사람은 격리합니다. 물자 수송이 끊겨 창고가 비어 갑니다.",
+      "tutorial": [
+        "PCR은 45초가 걸리고 시약 1개를 씁니다. 증상 응답과 키트 음성이 겹칠 때만 쓰십시오. 다른 경우에 써도 막지는 않지만 시약과 시간을 잃습니다."
       ]
+    },
+    {
+      "day": 12,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "faultRatio": 0.32,
+      "infectedRatio": 0.15,
+      "hiddenRatio": 0.07,
+      "exceptionRatio": 0.04,
+      "medicRatio": 0.08,
+      "directiveRatio": 0.12,
+      "releasedRatio": 0,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord",
+        "medicalCert"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2",
+        "breathing",
+        "pcr"
+      ],
+      "outage": true,
+      "briefing": "본부 긴급 지침: 오늘에 한해 새벽구(07) 주민을 우선 입장시킵니다. 새벽구는 여전히 폐쇄 구역이지만 이 지침이 폐쇄 구역 규정보다 우선합니다. 다른 서류 문제와 건강 검사는 그대로 적용합니다. 변전 설비가 불안정해 근무 중 정전이 있을 수 있습니다.",
+      "tutorial": [
+        "규정끼리 부딪히면 규정집에 적힌 우선순위를 따르십시오. 정전 중에는 산소포화도 측정기와 PCR을 쓸 수 없습니다."
+      ]
+    },
+    {
+      "day": 13,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "faultRatio": 0.32,
+      "infectedRatio": 0.18,
+      "hiddenRatio": 0.07,
+      "exceptionRatio": 0.04,
+      "medicRatio": 0.08,
+      "directiveRatio": 0,
+      "releasedRatio": 0.15,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord",
+        "medicalCert",
+        "releaseCert"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2",
+        "breathing",
+        "pcr"
+      ],
+      "briefing": "다른 대피소에서 격리를 마친 사람들이 격리 해제 확인서를 들고 옵니다. 격리 기간이 5일보다 짧으면 위조로 거부합니다. 격리실이 거의 찼으니 자리 계산에 주의하십시오.",
+      "tutorial": [
+        "격리 해제 확인서의 격리 시작일과 해제일을 빼서 격리 기간을 계산하십시오."
+      ]
+    },
+    {
+      "day": 14,
+      "visitors": 12,
+      "timeLimitSec": 360,
+      "faultRatio": 0.32,
+      "infectedRatio": 0.15,
+      "hiddenRatio": 0.07,
+      "exceptionRatio": 0.04,
+      "medicRatio": 0.08,
+      "directiveRatio": 0,
+      "releasedRatio": 0.12,
+      "twoFaultChance": 0.2,
+      "companionChance": 0.35,
+      "closedDistricts": [
+        "05",
+        "07",
+        "02",
+        "08"
+      ],
+      "questions": [
+        "name",
+        "district",
+        "group"
+      ],
+      "documents": [
+        "idCard",
+        "permit",
+        "companionList",
+        "healthRecord",
+        "medicalCert",
+        "releaseCert"
+      ],
+      "tools": [
+        "temperature",
+        "symptoms",
+        "rapidKit",
+        "spo2",
+        "breathing",
+        "pcr"
+      ],
+      "briefing": "마지막 근무일입니다. 오늘 밤 본부가 대피소 운영을 재평가합니다. 규정은 어제와 같습니다.",
+      "tutorial": []
     }
   ]
 }

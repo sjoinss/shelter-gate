@@ -58,6 +58,17 @@ export function buildDocuments(truth, rng, ctx, dayDef, data) {
     };
   }
 
+  if (dayDef.documents.includes('releaseCert') && truth.released) {
+    const start = today - rng.int(9, 16);
+    const released = start + rng.int(data.balance.release.minQuarantineDays, 8);
+    docs.releaseCert = {
+      name: truth.name,
+      start,
+      released: Math.min(released, today - 1),
+      confirmer: rng.pick(data.districts.otherShelterConfirmers),
+    };
+  }
+
   if (dayDef.documents.includes('medicalCert') && truth.medic) {
     docs.medicalCert = {
       name: truth.name,

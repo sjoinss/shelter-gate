@@ -21,8 +21,9 @@ export const KIND_LABEL = {
  * @param reason 거부 사유 (deny일 때)
  * @param opts.quarantineFull 판정 시점에 이 일행을 받을 격리실 자리가 없었는지
  * @param opts.kitsOut 키트가 떨어져 이 방문자를 키트로 검사할 수 없었는지
+ * @param opts.reagentsOut 시약이 떨어져 이 방문자를 PCR로 검사할 수 없었는지
  */
-export function judge(visitor, verdict, reason = null, { quarantineFull = false, kitsOut = false } = {}) {
+export function judge(visitor, verdict, reason = null, { quarantineFull = false, kitsOut = false, reagentsOut = false } = {}) {
   const base = { visitorId: visitor.id, name: visitor.documents.idCard?.name ?? visitor.truth.name, verdict, reason };
   let expected = visitor.correctVerdict;
   let reasons = visitor.correctReasons;
@@ -32,7 +33,13 @@ export function judge(visitor, verdict, reason = null, { quarantineFull = false,
     expected = visitor.noKit.verdict;
     reasons = visitor.noKit.reasons;
     extra = ['키트가 떨어져 검사할 수 없었습니다. 이 경우 증상 응답자는 격리합니다.'];
+  } else if (reagentsOut && visitor.noPcr) {
+    expected = visitor.noPcr.verdict;
+    reasons = visitor.noPcr.reasons;
+    extra = ['시약이 떨어져 PCR을 할 수 없었습니다. 이 경우 증상 응답이 있고 키트가 음성인 사람은 격리합니다.'];
   }
+  // 규정 충돌로 정답이 바뀐 경우, 어느 규정이 우선했는지 해설에 붙인다
+  for (const c of visitor.conflicts ?? []) if (c.note) extra.push(`규정 충돌: ${c.note}`);
   // 격리 대상인데 격리실이 모자라면 '격리실 만석'으로 거부하는 것이 정답
   if (expected === 'quarantine' && quarantineFull) {
     expected = 'deny';

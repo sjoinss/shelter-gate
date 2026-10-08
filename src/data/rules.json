@@ -27,7 +27,8 @@
           "statement.name",
           "permit.name",
           "healthRecord.name",
-          "medicalCert.name"
+          "medicalCert.name",
+          "releaseCert.name"
         ]
       },
       "verdict": "deny",
@@ -336,6 +337,68 @@
       },
       "verdict": "quarantine",
       "reason": "호흡 이상"
+    },
+    {
+      "id": "R-PCR-QUARANTINE",
+      "since": 11,
+      "category": "health",
+      "priority": 10,
+      "text": "증상이 있다고 답했는데 신속 키트가 음성이면 정밀 검사(PCR)로 확인한다. PCR 양성이면 격리한다. 시약이 떨어졌으면 그런 사람은 격리한다.",
+      "check": {
+        "op": "all",
+        "checks": [
+          {
+            "op": "anyTrue",
+            "field": "exam.symptoms"
+          },
+          {
+            "op": "==",
+            "field": "exam.rapidKit",
+            "value": "neg"
+          },
+          {
+            "op": "==",
+            "field": "exam.pcr",
+            "value": "pos"
+          }
+        ]
+      },
+      "verdict": "quarantine",
+      "reason": "PCR 양성"
+    },
+    {
+      "id": "R-HQ-DIRECTIVE",
+      "since": 12,
+      "until": 13,
+      "category": "document",
+      "priority": 25,
+      "text": "[본부 긴급 지침] 오늘에 한해 새벽구(07) 주민은 폐쇄 구역이어도 입장시킨다. 이 지침은 폐쇄 구역 규정보다 우선한다. 서류 위조·만료 등 다른 규정과 건강 검사는 그대로 적용한다.",
+      "check": {
+        "op": "in",
+        "field": "idCard.district",
+        "ref": "directiveDistrictCodes"
+      },
+      "verdict": "approve",
+      "overrides": [
+        "R-DISTRICT-CLOSED"
+      ],
+      "conflictNote": "본부 긴급 지침이 폐쇄 구역 규정보다 우선합니다.",
+      "reason": "본부 긴급 지침"
+    },
+    {
+      "id": "R-RELEASE-SHORT",
+      "since": 13,
+      "category": "document",
+      "priority": 20,
+      "text": "격리 해제 확인서를 내면 격리 기간(해제일에서 격리 시작일을 뺀 날수)이 5일 이상이어야 한다. 5일보다 짧으면 위조로 보고 거부한다.",
+      "check": {
+        "op": "spanLess",
+        "from": "releaseCert.start",
+        "to": "releaseCert.released",
+        "value": 5
+      },
+      "verdict": "deny",
+      "reason": "격리 해제 확인서 위조"
     }
   ]
 }

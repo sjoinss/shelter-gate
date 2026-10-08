@@ -17,6 +17,7 @@ import {
   useTool,
   recheckReadyAt,
   gameTime,
+  setPowerOut,
 } from '../../core/dayFlow.js';
 import { memoItems, entryLines, answerLine, toolLines, QUESTIONS, TOOLS } from '../../core/describe.js';
 import { SYMPTOM_LABEL } from '../../core/infectionModel.js';
@@ -37,13 +38,14 @@ const TABS = [
   { id: 'docs', label: '서류' },
   { id: 'rules', label: '규정집' },
 ];
-const DOC_KINDS = ['idCard', 'permit', 'companionList', 'healthRecord', 'medicalCert'];
+const DOC_KINDS = ['idCard', 'permit', 'companionList', 'healthRecord', 'medicalCert', 'releaseCert'];
 const DOC_TITLES = {
   idCard: '대피카드',
   permit: '대피 허가증',
   companionList: '동행자 명부',
   healthRecord: '건강 기록 카드',
   medicalCert: '의료인 증명서',
+  releaseCert: '격리 해제 확인서',
 };
 const ARM_MS = 3000;
 
@@ -126,6 +128,7 @@ export function renderInspection({ store, navigate }) {
     const items = [stat('수용', `${s.occupancy}/${s.capacity}`)];
     if (s.quarantineEnabled) items.push(stat('격리', `${s.quarantineSeats - s.quarantineFree}/${s.quarantineSeats}`));
     if (s.dayDef.tools.includes('rapidKit')) items.push(stat('키트', String(s.kitsLeft)));
+    if (s.dayDef.tools.includes('pcr')) items.push(stat('시약', String(s.reagentsLeft)));
     items.push(stat('신뢰도', String(game.shelter.trust)), stat('대기', `${remainingVisitors(s)}명`));
     stats.replaceChildren(...items);
   }
@@ -257,13 +260,17 @@ export function renderInspection({ store, navigate }) {
         }
         continue;
       }
-      const doneKey = { symptoms: 'symptomsDone', rapidKit: 'kitDone', spo2: 'spo2Done', breathing: 'breathingDone' }[tool];
+      const doneKey = { symptoms: 'symptomsDone', rapidKit: 'kitDone', spo2: 'spo2Done', breathing: 'breathingDone', pcr: 'pcrDone' }[tool];
       if (rec[doneKey]) {
         buttons.push(toolButton(`tool:${tool}`, `${TOOLS[tool].label} 끝 ✓`, true, null));
+      } else if (s.powerOut && balance.outage.poweredTools.includes(tool)) {
+        buttons.push(toolButton(`tool:${tool}`, `${TOOLS[tool].label}, 정전으로 사용 불가`, true, null));
+      } else if (tool === 'pcr' && s.reagentsLeft <= 0) {
+        buttons.push(toolButton(`tool:${tool}`, 'PCR 시약 없음 (재고 0)', true, null));
       } else if (tool === 'rapidKit' && s.kitsLeft <= 0) {
         buttons.push(toolButton(`tool:${tool}`, '키트 없음 (재고 0)', true, null));
       } else {
-        const extra = tool === 'rapidKit' ? `, 재고 ${s.kitsLeft}` : '';
+        const extra = tool === 'rapidKit' ? `, 재고 ${s.kitsLeft}` : tool === 'pcr' ? `, 시약 ${s.reagentsLeft}` : '';
         buttons.push(toolButton(`tool:${tool}`, `${TOOLS[tool].label} ${cost(tool)}초${extra}`, busy, () => onTool(tool)));
       }
     }
@@ -339,6 +346,13 @@ export function renderInspection({ store, navigate }) {
         ...row('예방접종', 'healthRecord.vaccinated', doc.vaccinated),
         ...row('지병', 'healthRecord.chronic', doc.chronic),
         ...row('최근 진료', 'healthRecord.recentSymptom', doc.recentSymptom ? `${D(doc.recentVisit)} ${SYMPTOM_LABEL[doc.recentSymptom]}` : '없음'),
+      ];
+    } else if (kind === 'releaseCert') {
+      rows = [
+        ...row('이름', 'releaseCert.name', doc.name),
+        ...row('격리 시작일', 'releaseCert.start', D(doc.start)),
+        ...row('격리 해제일', 'releaseCert.released', D(doc.released)),
+        ...row('확인 기관', 'releaseCert.confirmer', doc.confirmer),
       ];
     } else if (kind === 'medicalCert') {
       rows = [
@@ -888,8 +902,33 @@ export function renderInspection({ store, navigate }) {
     pauseBtn.focus();
   }
 
+  // ───────── 정전 (12일차) ─────────
+  const outageAt = s.dayDef.outage ? limitSec * balance.outage.atFraction : null;
+  const outageEnd = outageAt == null ? null : outageAt + balance.outage.durationSec;
+  let outagePhase = 'before'; // before | on | after
+  function updateOutage(elapsed) {
+    if (outageAt == null || outagePhase === 'after') return;
+    if (outagePhase === 'before' && elapsed >= outageAt) {
+      outagePhase = 'on';
+      s = setPowerOut(s, true);
+      root.classList.add('is-outage');
+      if (currentVisitor(s)) ui.log.push({ kind: 'system', text: '전등이 꺼졌다. 비상등만 남았다. 산소포화도 측정기와 PCR이 멈췄다.' });
+      toast('정전입니다. 전기 장비를 쓸 수 없습니다.', 'warning', { duration: 4000 });
+      announce('정전. 산소포화도 측정기와 PCR을 쓸 수 없습니다.', { assertive: true });
+      renderAll();
+    } else if (outagePhase === 'on' && elapsed >= outageEnd) {
+      outagePhase = 'after';
+      s = setPowerOut(s, false);
+      root.classList.remove('is-outage');
+      if (currentVisitor(s)) ui.log.push({ kind: 'system', text: '전기가 돌아왔다.' });
+      announce('전기가 돌아왔습니다.');
+      renderAll();
+    }
+  }
+
   // ───────── 타이머 ─────────
   function onTick(elapsed) {
+    updateOutage(elapsed);
     const remaining = limitSec - elapsed - s.penaltySec;
     clock.textContent = formatClock(remaining);
     clock.classList.toggle('is-low', remaining <= 30);

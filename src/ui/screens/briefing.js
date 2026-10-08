@@ -6,7 +6,7 @@ import { formatClock } from '../timer.js';
 import { officialSheet, officialSection, paperScreen, wallButton, fieldTable } from '../components/official.js';
 import { ruleArticles } from '../ruleArticles.js';
 
-const TOOL_NAMES = { temperature: '체온계', symptoms: '증상 문답', rapidKit: '신속 키트', spo2: '산소포화도 측정기', breathing: '호흡 관찰' };
+const TOOL_NAMES = { temperature: '체온계', symptoms: '증상 문답', rapidKit: '신속 키트', spo2: '산소포화도 측정기', breathing: '호흡 관찰', pcr: '정밀 검사(PCR)' };
 
 export function renderBriefing({ store, navigate }) {
   const { game, settings } = store.get();
@@ -64,6 +64,7 @@ export function renderBriefing({ store, navigate }) {
     rows.push(['격리실', `${quarantineUsed(shelter)}/${shelter.quarantineSeats}석 사용 중 (빈자리 ${quarantineFree(shelter)})`]);
   }
   if (dayDef.tools.includes('rapidKit')) rows.push(['키트 재고', `${shelter.kits}개`]);
+  if (dayDef.tools.includes('pcr')) rows.push(['PCR 시약', `${shelter.reagents}개`]);
   if (consuming) {
     rows.push(['식량', `${shelter.food}인분`], ['의약품', `${shelter.medicine}개`], ['필터', `${shelter.filters}개`]);
   }

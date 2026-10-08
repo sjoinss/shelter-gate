@@ -40,6 +40,9 @@
     },
     "breathing": {
       "costSec": 5
+    },
+    "pcr": {
+      "costSec": 45
     }
   },
   "infection": {
@@ -69,6 +72,11 @@
         "none": 0.02,
         "incubating": 0,
         "symptomatic": 0.65
+      },
+      "pcr": {
+        "none": 0.005,
+        "incubating": 0.99,
+        "symptomatic": 0.99
       }
     },
     "visibleSignChance": 0.6,
@@ -124,7 +132,8 @@
       "food": 200,
       "medicine": 10,
       "filters": 6,
-      "kits": 4
+      "kits": 4,
+      "reagents": 0
     },
     "consumeFromDay": 7,
     "foodPerPerson": 1,
@@ -139,7 +148,12 @@
     },
     "medicReward": {
       "medicine": 3
-    }
+    },
+    "reagentAllotment": {
+      "fromNight": 10,
+      "amount": 1
+    },
+    "outageSpreadMultiplier": 1.6
   },
   "shop": {
     "openFromDay": 6,
@@ -159,11 +173,26 @@
       "kits": {
         "price": 1,
         "amount": 2
+      },
+      "reagents": {
+        "price": 3,
+        "amount": 1
       }
     }
   },
   "events": {
     "chancePerNight": 0.7,
     "fromDay": 7
+  },
+  "release": {
+    "minQuarantineDays": 5
+  },
+  "outage": {
+    "atFraction": 0.4,
+    "durationSec": 30,
+    "poweredTools": [
+      "spo2",
+      "pcr"
+    ]
   }
 }

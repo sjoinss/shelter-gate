@@ -8,7 +8,7 @@ import { officialSheet, officialSection, paperScreen, wallButton } from '../comp
 import { toast } from '../feedback.js';
 import { announce } from '../a11y.js';
 
-const UNIT = { food: '인분', medicine: '개', filters: '개', kits: '개' };
+const UNIT = { food: '인분', medicine: '개', filters: '개', kits: '개', reagents: '개' };
 const KIT_NOTE = '하루 방문자 중 증상 응답자 수만큼';
 
 export function renderSupply({ store, navigate }) {
@@ -29,14 +29,14 @@ export function renderSupply({ store, navigate }) {
       ...RESOURCE_KEYS.map((key) => {
         const item = items[key];
         const after = shelter[key] + order[key] * item.amount;
-        const short = key !== 'kits' && after < need[key];
+        const short = key !== 'kits' && key !== 'reagents' && after < need[key];
         return el('tr', {}, [
           el('th', { attrs: { scope: 'row' } }, [
             el('span', { text: RESOURCE_LABEL[key] }),
             el('span', { className: 'choice__note', text: `${item.price}포인트에 ${item.amount}${UNIT[key]}` }),
           ]),
           el('td', { text: `${shelter[key]}` }),
-          el('td', { text: key === 'kits' ? KIT_NOTE : `${need[key]}` }),
+          el('td', { text: key === 'kits' ? KIT_NOTE : key === 'reagents' ? 'PCR 1회에 1개' : `${need[key]}` }),
           el('td', {}, [
             el('div', { className: 'stepper' }, [
               el('button', {

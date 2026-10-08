@@ -23,7 +23,7 @@ function memoryStorage(initial = {}) {
 }
 
 const validSave = () => ({
-  version: 3,
+  version: 4,
   baseSeed: 12345,
   day: 5,
   shelter: {
@@ -36,11 +36,12 @@ const validSave = () => ({
     medicine: 8,
     filters: 3,
     kits: 2,
+    reagents: 1,
     flags: { bribes: 1, ruleBreaks: 0, eventsSeen: ['outbreak', 'bribe'] },
     trust: 68,
     supplyPoints: 4,
   },
-  history: [{ day: 1, processed: 6, correct: 5, mistakes: 1, unprocessed: 0, approvedPeople: 3, trustDelta: -2, infections: 0, majors: 0 }],
+  history: [{ day: 1, processed: 6, correct: 5, mistakes: 1, unprocessed: 0, approvedPeople: 3, trustDelta: -2, infections: 0, majors: 0, denied: 2, hiddenAdmitted: 0 }],
 });
 
 describe('storage: 검증', () => {
@@ -58,7 +59,7 @@ describe('storage: 검증', () => {
     const cases = [
       (s) => (s.day = '2'),
       (s) => (s.day = 0),
-      (s) => (s.day = 15),
+      (s) => (s.day = 16),
       (s) => (s.baseSeed = -1),
       (s) => (s.baseSeed = 1.5),
       (s) => (s.shelter.trust = 101),
@@ -91,8 +92,8 @@ describe('storage: 검증', () => {
 
   it('버전 불일치는 거부 (M1의 v1 저장 포함)', () => {
     expect(validateSave({ ...validSave(), version: 1 })).toBeNull();
-    expect(validateSave({ ...validSave(), version: 2 })).toBeNull();
-    expect(validateSave({ ...validSave(), version: 4 })).toBeNull();
+    expect(validateSave({ ...validSave(), version: 3 })).toBeNull();
+    expect(validateSave({ ...validSave(), version: 5 })).toBeNull();
   });
 
   it('격리 항목의 모르는 키는 버린다', () => {
@@ -103,8 +104,8 @@ describe('storage: 검증', () => {
 
   it('모르는 키는 버리고, __proto__ 키는 오염을 일으키지 않는다', () => {
     const text = JSON.stringify(validSave()).replace(
-      '"version":3',
-      '"version":3,"__proto__":{"polluted":true},"extra":"x","constructor":{"prototype":{"polluted":true}}',
+      '"version":4',
+      '"version":4,"__proto__":{"polluted":true},"extra":"x","constructor":{"prototype":{"polluted":true}}',
     );
     const parsed = safeParse(text);
     const clean = validateSave(parsed);

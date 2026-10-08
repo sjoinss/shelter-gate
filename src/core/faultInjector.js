@@ -42,6 +42,7 @@ export const FAULT_TYPES = {
       }
       if (v.documents.healthRecord) evidence.push('healthRecord.name');
       if (v.documents.medicalCert) evidence.push('medicalCert.name');
+      if (v.documents.releaseCert) evidence.push('releaseCert.name');
       return { field: 'idCard.name', evidence, explain };
     },
   },
@@ -286,6 +287,28 @@ FAULT_TYPES.medForged = {
           evidence: ['ref.hospitals', 'rule:R-MED-FORGED'],
           explain: `의료인 증명서 소속 기관 '${affiliation}'는 규정집의 의료기관 목록에 없습니다.`,
         };
+  },
+};
+
+FAULT_TYPES.releaseForged = {
+  rule: 'R-RELEASE-SHORT',
+  available: (v) => !v.documents.releaseCert,
+  apply(v, rng, ctx, data) {
+    const min = data.balance.release.minQuarantineDays;
+    const start = ctx.today - rng.int(4, 9);
+    const span = rng.int(1, min - 1);
+    v.documents.releaseCert = {
+      name: v.truth.name,
+      start,
+      released: Math.min(start + span, ctx.today - 1),
+      confirmer: rng.pick(data.districts.otherShelterConfirmers),
+    };
+    const c = v.documents.releaseCert;
+    return {
+      field: 'releaseCert.released',
+      evidence: ['releaseCert.start', 'rule:R-RELEASE-SHORT'],
+      explain: `격리 해제 확인서의 격리 기간은 ${D(c.start)}부터 ${D(c.released)}까지 ${c.released - c.start}일로, 규정의 ${min}일보다 짧습니다.`,
+    };
   },
 };
 

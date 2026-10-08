@@ -93,13 +93,18 @@ function makeCompanions(rng, data, dayDef, main, used) {
 /**
  * @param opts.exception 고령자 예외 방문자: 70세 이상 본인이 폐쇄 구역 출신
  */
-function makeTruth(rng, data, dayDef, used, { exception = false, medic = false } = {}) {
+function makeTruth(rng, data, dayDef, used, { exception = false, medic = false, directive = false, released = false } = {}) {
   const ageGroup = exception ? 'elder' : medic ? 'adult' : rng.chance(data.balance.generator.elderChance) ? 'elder' : 'adult';
   const person = makePerson(rng, data, ageGroup, medic ? rng.int(26, 62) : null);
   // 의료인은 절반쯤 폐쇄 구역 출신 (예외 규정이 필요한 경우)
   const fromClosed = exception || (medic && rng.chance(0.5));
+  const directiveCodes = data.districts.directiveDistricts?.[dayDef.day] ?? [];
   const candidates = data.districts.districts.filter((d) =>
-    fromClosed ? dayDef.closedDistricts.includes(d.code) : !dayDef.closedDistricts.includes(d.code),
+    directive
+      ? directiveCodes.includes(d.code)
+      : fromClosed
+        ? dayDef.closedDistricts.includes(d.code)
+        : !dayDef.closedDistricts.includes(d.code),
   );
   const district = rng.pick(candidates);
   const name = makeName(rng, data, null, used);
@@ -111,6 +116,7 @@ function makeTruth(rng, data, dayDef, used, { exception = false, medic = false }
     item: ageGroup === 'elder' ? rng.pick(['none', 'cane']) : rng.pick(data.appearance.items),
     companions: makeCompanions(rng, data, dayDef, { name, age: person.age }, used),
     medic: medic ? rng.pick(['MD', 'RN']) : null,
+    released,
   };
 }
 
@@ -157,6 +163,8 @@ function sameSet(a, b) {
  *  - exception: 고령자 예외 (폐쇄 구역 출신이지만 승인)
  *  - hidden: 잠복기 감염자. 장비로 잡힐 수도, 안 잡힐 수도 있음 (7일차부터, 운 요소)
  *  - medic: 유효한 의료인 증명서를 가진 의료인 (9일차부터)
+ *  - directive: 본부 긴급 지침 대상 구역 주민 (폐쇄 구역이지만 지침이 우선해 승인, 12일차)
+ *  - released: 다른 대피소에서 격리를 마친 사람, 유효한 격리 해제 확인서 (13일차부터)
  */
 function generateVisitor({ id, rng, data, dayDef, ctx, rules, role, used }) {
   const ruleById = new Map(rules.map((r) => [r.id, r]));
@@ -164,7 +172,12 @@ function generateVisitor({ id, rng, data, dayDef, ctx, rules, role, used }) {
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const usedLocal = new Set(used);
-    const truth = makeTruth(rng, data, dayDef, usedLocal, { exception: role === 'exception', medic: role === 'medic' });
+    const truth = makeTruth(rng, data, dayDef, usedLocal, {
+      exception: role === 'exception',
+      medic: role === 'medic',
+      directive: role === 'directive',
+      released: role === 'released',
+    });
     const stage = role === 'infected' ? 'symptomatic' : role === 'hidden' ? 'incubating' : 'none';
     truth.health = rollHealth(rng, stage, data.balance);
     const visitor = {
@@ -193,10 +206,12 @@ function generateVisitor({ id, rng, data, dayDef, ctx, rules, role, used }) {
     if (!sameSet(docViolated, injected)) continue; // 의도하지 않은 서류 위반 / 주입한 오류가 드러나지 않음
     if (role === 'infected' && healthViolated.length === 0) continue; // 증상기 감염자는 반드시 발견 가능
     if (role !== 'infected' && role !== 'hidden' && healthViolated.length > 0) continue;
-    if ((role === 'exception' || role === 'medic') && result.verdict !== 'approve') continue;
+    if (['exception', 'medic', 'directive', 'released'].includes(role) && result.verdict !== 'approve') continue;
+    if (role === 'directive' && result.conflicts.length === 0) continue;
 
     visitor.correctVerdict = result.verdict;
     visitor.correctReasons = result.reasons.map((r) => r.reason);
+    visitor.conflicts = result.conflicts;
     visitor.healthExplain = explainHealth(visitor.exam, activeIds, data.balance.infection.feverThreshold);
     // 잠복기 감염자를 장비로 못 잡는 경우: 승인이 정답이지만 정산에서 알려 준다
     visitor.undetectable = truth.health.infected && result.verdict === 'approve';
@@ -205,6 +220,13 @@ function generateVisitor({ id, rng, data, dayDef, ctx, rules, role, used }) {
       const noKit = evaluate({ ...visitor, exam: { ...visitor.exam, rapidKit: 'pos' } }, rules, ctx);
       if (noKit.verdict !== result.verdict) {
         visitor.noKit = { verdict: noKit.verdict, reasons: noKit.reasons.map((r) => r.reason) };
+      }
+    }
+    // 시약이 떨어졌을 때의 정답 (PCR 결과를 양성으로 간주)
+    if (activeIds.has('R-PCR-QUARANTINE')) {
+      const noPcr = evaluate({ ...visitor, exam: { ...visitor.exam, pcr: 'pos' } }, rules, ctx);
+      if (noPcr.verdict !== result.verdict) {
+        visitor.noPcr = { verdict: noPcr.verdict, reasons: noPcr.reasons.map((r) => r.reason) };
       }
     }
     for (const n of usedLocal) used.add(n);
@@ -227,6 +249,8 @@ export function generateDay(data, baseSeed, day) {
     // 잠복기 감염자는 기대값만 정하고 확률로 뽑는다 (운 요소가 매일 생기지 않게)
     hidden: Math.floor(n * (dayDef.hiddenRatio ?? 0)) + (rng.chance((n * (dayDef.hiddenRatio ?? 0)) % 1) ? 1 : 0),
     medic: Math.round(n * (dayDef.medicRatio ?? 0)),
+    directive: Math.round(n * (dayDef.directiveRatio ?? 0)),
+    released: Math.round(n * (dayDef.releasedRatio ?? 0)),
   };
   const roles = [];
   for (const [role, count] of Object.entries(counts)) for (let i = 0; i < count; i++) roles.push(role);

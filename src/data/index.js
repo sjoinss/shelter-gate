@@ -6,5 +6,6 @@ import names from './names.json';
 import districts from './districts.json';
 import appearance from './appearance.json';
 import events from './events.json';
+import endings from './endings.json';
 
-export const gameData = Object.freeze({ balance, days, rules, names, districts, appearance, events });
+export const gameData = Object.freeze({ balance, days, rules, names, districts, appearance, events, endings });

@@ -53,6 +53,7 @@ export function buildContext(data, day) {
     closedDistrictCodes,
     shelterName: districts.shelterName,
     hospitals: districts.hospitals ?? [],
+    directiveDistrictCodes: validDistrictCodes.filter((c) => (districts.directiveDistricts?.[day] ?? []).includes(c.split('-')[1])),
   };
 }
 
@@ -67,6 +68,11 @@ function patternOf(source) {
 function matches(check, subject, ctx) {
   if (check.op === 'any') return check.checks.some((c) => matches(c, subject, ctx));
   if (check.op === 'all') return check.checks.every((c) => matches(c, subject, ctx));
+  if (check.op === 'spanLess') {
+    const from = getPath(subject, check.from);
+    const to = getPath(subject, check.to);
+    return from != null && to != null && to - from < check.value;
+  }
 
   const value = getPath(subject, check.field);
   if (value === undefined || value === null) return false; // 해당 서류/값이 없으면 적용되지 않음
@@ -128,12 +134,25 @@ export function subjectOf(visitor) {
  */
 export function evaluate(visitor, rules, ctx) {
   const subject = subjectOf(visitor);
-  const violated = rules.filter((r) => violates(r, subject, ctx));
-  if (violated.length === 0) return { verdict: 'approve', reasons: [], violated: [] };
+  let violated = rules.filter((r) => r.verdict !== 'approve' && violates(r, subject, ctx));
+
+  // 규정 충돌: verdict가 approve인 우선 규정(지침)이 적용되면 overrides에 적힌 규정을 무효로 한다
+  const conflicts = [];
+  for (const o of rules.filter((r) => r.verdict === 'approve' && violates(r, subject, ctx))) {
+    for (const id of o.overrides ?? []) {
+      if (violated.some((v) => v.id === id)) {
+        conflicts.push({ winner: o.id, loser: id, note: o.conflictNote ?? '' });
+        violated = violated.filter((v) => v.id !== id);
+      }
+    }
+  }
+
+  if (violated.length === 0) return { verdict: 'approve', reasons: [], violated: [], conflicts };
   const verdict = violated[0].verdict; // priority 순으로 정렬되어 있음
   return {
     verdict,
     reasons: violated.filter((r) => r.verdict === verdict).map((r) => ({ ruleId: r.id, reason: r.reason })),
     violated: violated.map((r) => r.id),
+    conflicts,
   };
 }

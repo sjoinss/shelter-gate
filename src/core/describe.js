@@ -101,6 +101,7 @@ export const TOOLS = {
   rapidKit: { label: '신속 키트' },
   spo2: { label: '산소포화도' },
   breathing: { label: '호흡 관찰' },
+  pcr: { label: 'PCR' },
 };
 
 const SYMPTOM_NAMES = { cough: '기침', fever: '발열', vomiting: '구토', breathless: '호흡곤란' };
@@ -139,6 +140,11 @@ export function toolLines(result, threshold, spo2Threshold = 94) {
           key: 'exam.spo2',
           text: `산소포화도 ${result.value}%${result.value < spo2Threshold ? `, 기준(${spo2Threshold}%) 미만` : ''}`,
         },
+      ];
+    case 'pcr':
+      return [
+        { kind: 'action', text: '검체를 정밀 검사기에 넣었다. 판독까지 45초가 걸렸다.' },
+        { kind: 'exam', key: 'exam.pcr', text: `PCR ${result.value === 'pos' ? '양성' : '음성'}` },
       ];
     case 'breathing':
       return [

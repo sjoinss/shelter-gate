@@ -5,6 +5,7 @@ import { createShelter, applyDaySummary, isGameOver, runNight } from '../core/sh
 import { createRng, daySeed } from '../core/rng.js';
 import { pickEvent, applyChoice } from '../core/events.js';
 import { buySupplies } from '../core/supply.js';
+import { pickEnding } from '../core/endings.js';
 import { summarizeDay } from '../core/scoring.js';
 import { dayResult } from '../core/dayFlow.js';
 import { loadGame, saveGame, clearSave, saveSettings, STORAGE_MESSAGES, SAVE_VERSION } from '../save/storage.js';
@@ -66,7 +67,9 @@ export function finishDay(dayState) {
       quarantined: result.quarantined,
       approvedInfected: result.approvedInfected,
       kitsLeft: result.kitsLeft,
+      reagentsLeft: result.reagentsLeft,
       medicsAdmitted: result.medicsAdmitted,
+      outage: result.outage,
     },
     nightRng,
     balance,
@@ -85,6 +88,8 @@ export function finishDay(dayState) {
       trustDelta: shelter.trust - game.shelter.trust,
       infections: night.found,
       majors: summary.majors,
+      denied: result.denied,
+      hiddenAdmitted: result.undetected.length,
     },
   ];
 
@@ -92,18 +97,20 @@ export function finishDay(dayState) {
   let saveStatus = null;
   const next = { baseSeed: game.baseSeed, day: game.day + 1, shelter, history };
 
+  const lastDay = game.day >= gameData.days.lastPlayableDay;
   if (isGameOver(shelter)) {
-    ending = { kind: 'gameover' };
+    ending = decideEnding(shelter, history);
     clearSave();
-  } else if (game.day >= gameData.days.lastPlayableDay) {
-    ending = { kind: 'buildEnd' };
-    clearSave();
-  } else {
+  } else if (!lastDay) {
     saveStatus = persist(next);
   }
 
-  // 밤 이벤트 (게임이 끝나지 않았을 때만)
+  // 밤 이벤트 (게임 오버가 아닐 때). 마지막 날은 최종 이벤트 뒤에 엔딩을 정한다
   const event = ending ? null : pickEvent(shelter, game.day, nightRng, gameData.events, balance);
+  if (lastDay && !ending && !event) {
+    ending = decideEnding(shelter, history);
+    clearSave();
+  }
 
   store.set({
     game: next,
@@ -116,11 +123,21 @@ export function finishDay(dayState) {
   });
 }
 
-/** 밤 보고 다음 화면: 이벤트 → 보급 → 브리핑 (엔딩이면 결과) */
+function decideEnding(shelter, history) {
+  const { ending, stats } = pickEnding(shelter, history, gameData.endings);
+  return { kind: ending.id, ending, stats };
+}
+
+/** 밤 보고 다음 화면: 이벤트 → (마지막 날이면 엔딩) → 보급 → 브리핑 */
 export function nextAfterNight() {
   const { ending, pendingEvent, game } = store.get();
   if (ending) return 'ending';
   if (pendingEvent && !pendingEvent.outcome) return 'event';
+  if (game.day - 1 >= gameData.days.lastPlayableDay) {
+    store.set({ ending: decideEnding(game.shelter, game.history) });
+    clearSave();
+    return 'ending';
+  }
   if (game.day - 1 >= gameData.balance.shop.openFromDay) return 'supply';
   return 'briefing';
 }
@@ -135,14 +152,15 @@ export function chooseEvent(index) {
   const next = { ...game, shelter };
   let ending = null;
   if (isGameOver(shelter)) {
-    ending = { kind: 'gameover' };
+    ending = decideEnding(shelter, game.history);
     clearSave();
   }
+  const lastDay = game.day - 1 >= gameData.days.lastPlayableDay;
   store.set({
     game: next,
     ending,
     pendingEvent: { ...pendingEvent, outcome: { index, result, before, after: shelter } },
-    saveStatus: ending ? null : persist(next),
+    saveStatus: ending || lastDay ? null : persist(next),
   });
 }
 

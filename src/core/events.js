@@ -45,6 +45,10 @@ function applyEffects(shelter, effects) {
       if (delta) next.hiddenInfected = Math.floor(next.hiddenInfected / 2);
     } else if (key === 'bribes' || key === 'ruleBreaks') {
       next.flags[key] += delta;
+    } else if (key === 'capacity') {
+      // 한도가 줄면 넘치는 인원은 다른 대피소로 옮겨진다
+      next.capacity = Math.max(40, next.capacity + delta);
+      next.occupancy = Math.min(next.occupancy, next.capacity);
     } else if (key === 'occupancy') {
       next.occupancy = Math.min(next.capacity, next.occupancy + delta);
     } else if (key === 'trust') {

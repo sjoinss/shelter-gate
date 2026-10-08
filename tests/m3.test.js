@@ -76,7 +76,7 @@ describe('M3: 물자 소모와 부족', () => {
       occupancy: 61,
       quarantine: [{ name: 'a', groupSize: 2, infected: true, dayIn: 7, releaseDay: 9, transferDay: 11 }],
     };
-    expect(nightlyNeed(s, balance)).toEqual({ food: 61, medicine: 2, filters: 2, kits: 0 });
+    expect(nightlyNeed(s, balance)).toEqual({ food: 61, medicine: 2, filters: 2, kits: 0, reagents: 0 });
   });
 });
 
