@@ -32,6 +32,8 @@ function injectCsp() {
 }
 
 export default defineConfig({
+  // 상대 경로: GitHub Pages(/shelter-gate/) 같은 하위 경로에서도 그대로 동작
+  base: './',
   plugins: [injectCsp()],
   build: {
     sourcemap: false,
